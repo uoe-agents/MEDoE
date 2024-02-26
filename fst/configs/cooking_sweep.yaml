@@ -1,0 +1,89 @@
+defaults:
+  - env: cooking_base
+  - agents: mappo
+  - run: train_30m
+  - logger: default_logger
+  - env@eval.env: ${env}
+  - hydra: slurm_sweep
+  - _self_
+
+hydra:
+  launcher:
+    timeout_min: 2880
+    cpus_per_task: 2
+    mem_per_cpu: 2G
+    array_parallelism: 64
+    additional_parameters: {"nice": 100}
+  sweep:
+    dir: multirun/${name}/${now:%Y-%m-%d}/${now:%H-%M-%S}/${logger.group}
+    subdir: all
+  sweeper:
+    optim:
+      optimizer: RandomSearch
+      budget: 256
+      num_workers: 64
+      noisy: true
+      maximize: false
+      seed: null
+      max_failure_rate: 0.1
+    parametrization:
+      agents.ent_coef:
+        lower: 1e-5
+        upper: 1e-2
+        log: true
+      agents.lr.actor:
+        lower: 1e-5
+        upper: 1e-2
+        log: true
+          agents.
+      agents.gamma:
+        - 0.99
+        - 0.999
+      agents.n_epochs:
+        - 2
+        - 4
+        - 8
+        - 16
+
+name: cooking
+seed: 1
+zoo_path: cooking_zoo/zoo
+
+env:
+  level: split_room_deterministic_hard
+  n_cpus: 2
+
+agents:
+  zoo_path: ${zoo_path}
+  model:
+    actor:
+      - 256
+      - 128
+    critic:
+      - 256
+      - 128
+  ent_coef: 8e-3
+  lr:
+    actor: 2e-4
+    critic: ${eval:'2*${agents.lr.actor}'}
+  n_steps: 16
+  save_to_zoo: false
+  n_agents: 2
+  agents:
+    - agent_id: alice
+      save_to_zoo: true
+    - agent_id: bob
+      save_to_zoo: true
+  exp_buffer:
+    size: 0
+    replacement_prob: 0
+
+logger:
+  mode: online
+  enable_render: false
+  model_save_period:
+    val: 0.2
+  eval_period:
+    val: 0.02
+  train_metric_period:
+    val: 0.02

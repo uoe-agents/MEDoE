@@ -1,0 +1,19 @@
+type: MLP
+load_mode: train
+save_classifier: true
+save_pathname: mlp_classifier.pt
+mlp:
+  hidden_sizes:
+    - 128
+  batch_size: 512
+  test_fraction: 0.1
+  learning_rate: 1e-2
+zoo_path: ${agents.zoo_path}
+zoo_mapping:
+  alice: ${agents.medoe.zoo_alice}
+  bob: ${agents.medoe.zoo_bob}
+shared_sources:
+  left:
+    - alice
+  right:
+    - bob

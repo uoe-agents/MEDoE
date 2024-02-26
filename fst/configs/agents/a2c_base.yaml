@@ -1,0 +1,8 @@
+gamma: 0.99
+n_steps: 4
+clip_grad:
+  actor: false
+  critic: false
+exp_buffer:
+  size: 5000
+  replacement_prob: 0.2

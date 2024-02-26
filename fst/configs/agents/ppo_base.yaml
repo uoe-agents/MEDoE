@@ -1,0 +1,11 @@
+gamma: 0.99
+n_steps: 4
+n_epochs: 8
+gae_lambda: 0.95
+clip_coef: 0.1
+clip_grad:
+  actor: false
+  critic: false
+exp_buffer:
+  size: 5000
+  replacement_prob: 0.2

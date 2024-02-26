@@ -1,0 +1,46 @@
+defaults:
+  - tab_ippo
+  - medoe/classifier: chainball_statemap
+  - _self_
+
+type: DoETabularDeIPPO
+zoo_path: ${zoo_path}
+save_to_zoo: false
+medoe:
+  enable_medoe: true
+  reset_doe: false
+  base_vals:
+    temp: 1.0
+    ent: ${agents.ent_coef}
+    clip: ${agents.clip_coef}
+  boost_vals:
+    temp: 1.0
+    ent: 1.0
+    clip: 1.0
+
+exp_buffer:
+  size: 0
+  replacement_prob: 0
+
+# # override in main config:
+# agents:
+#   n_agents: 4
+#   save_to_zoo: false
+#   medoe:
+#     zoo_alice: herman-goulding
+#     zoo_bob: teofila-warwick
+#     zoo_carol: john-smith
+#     zoo_dave: dave-smith
+#   agents:
+#       - agent_id: alice
+#         save_to_zoo: true
+#         zoo_name: ${agents.medoe.zoo_alice}
+#       - agent_id: bob
+#         save_to_zoo: true
+#         zoo_name: ${agents.medoe.zoo_bob}
+#       - agent_id: carol
+#         save_to_zoo: true
+#         zoo_name: ${agents.medoe.zoo_carol}
+#       - agent_id: dave
+#         save_to_zoo: true
+#         zoo_name: ${agents.medoe.zoo_dave}

@@ -1,0 +1,69 @@
+defaults:
+  - env: chainball_11_4_def
+  - agents: tab_ippo
+  - run: train_100k
+  - logger: default_logger
+  - env@eval.env: ${env}
+  - hydra: slurm_sweep
+  - _self_
+
+hydra:
+  launcher:
+    timeout_min: 60
+    cpus_per_task: 1
+    array_parallelism: 256
+    mem_per_cpu: 1G
+    additional_parameters: {"nice": 100}
+  sweep:
+    subdir: all
+  sweeper:
+    optim:
+      optimizer: RandomSearch
+      budget: 256
+      num_workers: 64
+      noisy: true
+      maximize: false
+      seed: null
+      max_failure_rate: 0.1
+    parametrization:
+      agents.ent_coef:
+        lower: 1e-5
+        upper: 1e-2
+        log: true
+      agents.lr.actor:
+        lower: 1e-4
+        upper: 1
+        log: true
+          agents.
+      agents.gamma:
+        - 0.99
+        - 0.999
+      agents.n_epochs:
+        - 4
+        - 8
+        - 16
+        - 32
+
+name: chainball
+seed: 1
+zoo_path: chainball_zoo/zoo
+
+agents:
+  save_to_zoo: false
+  n_agents: 2
+  agents:
+    - agent_id: alice
+      save_to_zoo: false
+    - agent_id: bob
+      save_to_zoo: false
+
+logger:
+  log_chainball_auc: true
+  mode: offline
+  enable_render: false
+  model_save_period:
+    val: 0.5
+  eval_period:
+    val: 0.02
+  train_metric_period:
+    val: 0.02

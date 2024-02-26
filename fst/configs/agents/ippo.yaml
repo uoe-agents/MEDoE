@@ -1,0 +1,14 @@
+defaults:
+  - ppo_base
+  - _self_
+
+type: IPPO
+model:
+  actor:
+    - 64
+  critic:
+    - 64
+ent_coef: 1e-5
+lr:
+  actor: 2e-3
+  critic: 4e-3

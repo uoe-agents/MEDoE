@@ -1,0 +1,17 @@
+defaults:
+  - hydra_simple
+  - override sweeper: nevergrad
+  - _self_
+
+sweeper:
+  optim:
+    optimizer: NGOpt
+    budget: 1024
+    num_workers: 128
+    noisy: true
+    maximize: true
+    seed: null
+
+sweep:
+  dir: multirun/${name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  subdir: alr_${agents.lr.actor}__clr_${agents.lr.critic}__ec_${agents.ent_coef}

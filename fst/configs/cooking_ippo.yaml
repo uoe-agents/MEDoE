@@ -1,0 +1,62 @@
+defaults:
+  - env: cooking_base
+  - agents: ippo
+  - run: train_30m
+  - logger: default_logger
+  - env@eval.env: ${env}
+  - hydra: hydra_slurm
+  - _self_
+
+hydra:
+  launcher:
+    timeout_min: 2880
+    cpus_per_task: 2
+    mem_per_cpu: 2G
+    array_parallelism: 64
+    additional_parameters: {"nice": 100}
+  sweep:
+    dir: multirun/${name}/${now:%Y-%m-%d}/${now:%H-%M-%S}/${logger.group}
+    subdir: ${seed}
+  sweeper:
+    params:
+      ++seed: range(0,16)
+
+name: cooking
+seed: 1
+zoo_path: cooking_zoo/zoo
+
+agents:
+  model:
+    actor:
+      - 256
+      - 128
+    critic:
+      - 256
+      - 128
+  gamma: 0.99
+  lr:
+    actor: 4e-4
+    critic: 8e-4
+  ent_coef: 8e-3
+  n_steps: 16
+  n_epochs: 16
+  save_to_zoo: false
+  n_agents: 2
+  agents:
+    - agent_id: alice
+      save_to_zoo: true
+    - agent_id: bob
+      save_to_zoo: true
+  exp_buffer:
+    size: 0
+    replacement_prob: 0
+
+logger:
+  mode: online
+  enable_render: false
+  model_save_period:
+    val: 0.5
+  eval_period:
+    val: 0.2
+  train_metric_period:
+    val: 0.2

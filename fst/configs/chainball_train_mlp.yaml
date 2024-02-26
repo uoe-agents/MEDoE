@@ -1,0 +1,58 @@
+defaults:
+  - env: chainball_11_4_hard
+  - agents: bp_tab_ippo
+  - run: train_0
+  - logger: default_logger
+  - env@eval.env: ${env}
+  - hydra: hydra_slurm
+  - override agents/medoe/classifier: mlp_chainball
+  - _self_
+
+hydra:
+  launcher:
+    timeout_min: 500
+    cpus_per_task: 2
+    array_parallelism: 256
+    mem_per_cpu: 2G
+  sweep:
+    dir: multirun/${name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${zoo_def.alice}_${zoo_att.alice}
+  sweeper:
+    params:
+      +zoo_def: tab_def_0,  tab_def_1,  tab_def_2,  tab_def_3
+      +zoo_att: tab_att_0,  tab_att_1,  tab_att_2,  tab_att_3
+
+name: chainball
+seed: 1
+zoo_path: chainball_zoo/zoo
+
+agents:
+  zoo_path: ${zoo_path}
+  save_to_zoo: false
+  n_agents: 4
+  agents:
+    - agent_id: alice
+      save_to_zoo: false
+      zoo_name: ${zoo_def.alice}
+    - agent_id: bob
+      save_to_zoo: false
+      zoo_name: ${zoo_def.bob}
+    - agent_id: carol
+      save_to_zoo: false
+      zoo_name: ${zoo_att.alice}
+    - agent_id: dave
+      save_to_zoo: false
+      zoo_name: ${zoo_att.bob}
+  exp_buffer:
+    size: 0
+    replacement_prob: 0
+
+logger:
+  mode: offline
+  enable_render: false
+  model_save_period:
+    val: 0.1
+  eval_period:
+    val: 0.02
+  train_metric_period:
+    val: 0.02

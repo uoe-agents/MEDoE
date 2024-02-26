@@ -1,0 +1,20 @@
+filename: ${name}
+logdir: ${name}
+entity: WANDB_ENTITY
+epoch_in_name: False
+video_fps: 8
+init_renders: 3
+final_renders: 3
+eval_final_ep: True
+eval_period:
+    val: 0.01
+    unit: step_frac
+train_metric_period:
+    val: 0.01
+    unit: step_frac
+render_save_period:
+    val: 0.5
+    unit: step_frac
+model_save_period:
+    val: 0.5
+    unit: step_frac

@@ -1,0 +1,3 @@
+type: MLP
+load_mode: load
+path_to_classifier: /path/to/classifier.pt

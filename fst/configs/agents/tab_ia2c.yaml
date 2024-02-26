@@ -1,0 +1,9 @@
+defaults:
+  - a2c_base
+  - _self_
+
+type: TabularIA2C
+ent_coef: 1e-5
+lr:
+  actor: 1e-2
+  critic: 2e-2

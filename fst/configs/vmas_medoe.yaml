@@ -1,0 +1,94 @@
+defaults:
+  - env: vmas_football_full
+  - agents: bp_ippo
+  - run: train_100m
+  - logger: default_logger
+  - env@eval.env: ${env}
+  - hydra: hydra_slurm
+  - override agents/medoe/classifier: mlp_vmas
+  - _self_
+
+hydra:
+  launcher:
+    timeout_min: 10080
+    cpus_per_task: 8
+    array_parallelism: 32
+    mem_per_cpu: 1G
+  sweep:
+    dir: multirun/${name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${zoo_def.RB}_${zoo_att.RF}_${seed}_${agents.medoe.enable_medoe}
+  sweeper:
+    params:
+      ++agents.medoe.enable_medoe: true,false
+      +zoo_att: vmas_att_0 , vmas_att_1, vmas_att_2, vmas_att_3
+      +zoo_def: vmas_def_0 , vmas_def_1, vmas_def_2, vmas_def_3
+
+name: vmas
+seed: 1
+zoo_path: vmas_zoo/zoo
+
+agents:
+  zoo_path: ${zoo_path}
+  model:
+    actor:
+      - 256
+      - 256
+      - 128
+    critic:
+      - 256
+      - 256
+      - 128
+  ent_coef: 4e-3
+  lr:
+    actor: 4e-3
+    critic: 8e-3
+  gamma: 0.999
+  n_steps: 64
+  n_agents: 4
+  save_to_zoo: false
+  agents:
+    - agent_id: LB
+      save_to_zoo: false
+      zoo_name: ${zoo_def.LB}
+    - agent_id: RB
+      save_to_zoo: false
+      zoo_name: ${zoo_def.RB}
+    - agent_id: LF
+      save_to_zoo: false
+      zoo_name: ${zoo_att.LF}
+    - agent_id: RF
+      save_to_zoo: false
+      zoo_name: ${zoo_att.RF}
+  exp_buffer:
+    size: 0
+    replacement_prob: 0
+  medoe:
+    zoo_LB: ${zoo_def.LB}
+    zoo_RB: ${zoo_def.RB}
+    zoo_LF: ${zoo_att.LF}
+    zoo_RF: ${zoo_att.RF}
+    enable_medoe: false
+    reset_doe: false
+    classifier:
+      load_mode: load
+      path_to_classifier: ${zoo_path}/classifiers/${zoo_def.RB}_${zoo_att.RF}.pt
+    base_vals:
+      temp: ${eval:'1.0/${sqrt:${agents.medoe.boost_vals.temp}}'}
+      ent: ${eval:'${agents.ent_coef}/${sqrt:${agents.medoe.boost_vals.ent}}'}
+      kl: ${eval:'${agents.kl_coef}/${sqrt:${agents.medoe.boost_vals.kl}}'}
+      clip: 1
+    boost_vals:
+      temp: 4
+      ent: 36
+      kl: 36
+      clip: 1
+
+logger:
+  mode: online
+  enable_render: false
+  model_save_period:
+    val: 0.05
+  eval_period:
+    val: 0.02
+  train_metric_period:
+    val: 0.05

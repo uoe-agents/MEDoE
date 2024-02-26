@@ -1,0 +1,8 @@
+max_training_steps: 5_000_000
+n_eval_episodes: 100
+early_stop:
+  do_early_stop: False
+  target: 0.95
+  smoothing: 0.31
+  hysteresis: 0.08
+  steps: 300_000

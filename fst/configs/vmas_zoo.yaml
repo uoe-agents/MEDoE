@@ -1,0 +1,58 @@
+defaults:
+  - env: vmas_football_att
+  - agents: ippo
+  - run: train_100m
+  - logger: default_logger
+  - env@eval.env: ${env}
+  - hydra: hydra_slurm
+  - _self_
+
+hydra:
+  launcher:
+    timeout_min: 10080
+    cpus_per_task: 8
+    array_parallelism: 32
+    mem_per_cpu: 1G
+
+name: vmas
+seed: 1
+zoo_path: vmas_zoo/zoo
+
+agents:
+  gamma: 0.999
+  model:
+    actor:
+      - 256
+      - 256
+      - 128
+    critic:
+      - 256
+      - 256
+      - 128
+  ent_coef: 4e-3
+  lr:
+    actor: 4e-3
+    critic: 8e-3
+  n_steps: 64
+  save_to_zoo: true
+  n_agents: 2
+  agents:
+    - agent_id: ${eval:'"LB" if "def" in "${env.name}" else "LF"'}
+      save_to_zoo: true
+    - agent_id: ${eval:'"RB" if "def" in "${env.name}" else "RF"'}
+      save_to_zoo: true
+  exp_buffer:
+    size: 4096
+    replacement_prob: 0.1
+
+logger:
+  mode: online
+  enable_render: false
+  project: vmas-medoe
+  group: drill
+  model_save_period:
+    val: 0.05
+  eval_period:
+    val: 0.1
+  train_metric_period:
+    val: 0.02

@@ -1,0 +1,86 @@
+defaults:
+  - env: cooking_base
+  - agents: bp_ippo
+  - run: train_10m
+  - logger: default_logger
+  - env@eval.env: ${env}
+  - hydra: hydra_slurm
+  - override agents/medoe/classifier: mlp_cooking
+  - _self_
+
+hydra:
+  launcher:
+    timeout_min: 2880
+    cpus_per_task: 2
+    array_parallelism: 64
+    mem_per_cpu: 2G
+  sweep:
+    dir: multirun/${name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${agents.medoe.zoo_alice}_${agents.medoe.zoo_bob}_${seed}_${agents.medoe.enable_medoe}
+  sweeper:
+    params:
+      ++agents.medoe.zoo_alice: milan-everitt,lisabeth-wainwright,aja-bacon,brett-henry
+      ++agents.medoe.zoo_bob: marilee-dyerson,margot-quinnell,cathrine-laing,deeanna-helm
+      ++agents.medoe.boost_vals.ent: 1.0,36.0
+      ++agents.medoe.boost_vals.kl: 1.0,36.0
+      ++agents.medoe.boost_vals.temp: 1.0,4.0
+
+name: cooking
+seed: 1
+zoo_path: cooking_zoo/zoo
+
+agents:
+  zoo_path: ${zoo_path}
+  model:
+    actor:
+      - 256
+      - 128
+    critic:
+      - 256
+      - 128
+  ent_coef: 8e-3
+  lr:
+    actor: 4e-4
+    critic: 8e-4
+  n_steps: 16
+  n_epochs: 16
+  save_to_zoo: false
+  n_agents: 2
+  agents:
+    - agent_id: alice
+      save_to_zoo: true
+      zoo_name: ${agents.medoe.zoo_alice}
+    - agent_id: bob
+      save_to_zoo: true
+      zoo_name: ${agents.medoe.zoo_bob}
+  exp_buffer:
+    size: 0
+    replacement_prob: 0
+  medoe:
+    zoo_alice: ZOO_ALICE
+    zoo_bob: ZOO_BOB
+    classifier:
+      load_mode: load
+      path_to_classifier: ${zoo_path}/classifiers/${agents.medoe.zoo_alice}_${agents.medoe.zoo_bob}.pt
+    enable_medoe: true
+    reset_doe: false
+    base_vals:
+      temp: ${eval:'1.0/${sqrt:${agents.medoe.boost_vals.temp}}'}
+      ent: ${eval:'${agents.ent_coef}/${sqrt:${agents.medoe.boost_vals.ent}}'}
+      kl: ${eval:'${agents.kl_coef}/${sqrt:${agents.medoe.boost_vals.kl}}'}
+      clip: 1.0
+    boost_vals:
+      temp: 4.0
+      ent: 36.0
+      kl: 36.0
+      clip: 1.0
+
+logger:
+  mode: online
+  enable_render: false
+  model_save_period:
+    val: 0.2
+  eval_period:
+    val: 0.02
+  train_metric_period:
+    val: 0.02

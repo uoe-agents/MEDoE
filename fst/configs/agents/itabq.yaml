@@ -1,0 +1,16 @@
+n_agents: 2
+type: ITabularQ
+agents:
+  - agent_id: alice
+    exploration_policy: e_greedy
+    lr: 1e-1
+    gamma: 0.9
+    epsilon: 1e-1
+    temperature: 1.0
+    save_to_zoo: false
+  - agent_id: bob
+    lr: 1e-1
+    gamma: 0.9
+    epsilon: 5e-1
+    temperature: 1.0
+    save_to_zoo: false

@@ -1,0 +1,16 @@
+defaults:
+  - a2c_base
+  - _self_
+
+type: MAA2C
+model:
+  actor:
+    - 128
+    - 128
+  critic:
+    - 128
+    - 128
+ent_coef: 1e-3
+lr:
+  actor: 2e-3
+  critic: 4e-3

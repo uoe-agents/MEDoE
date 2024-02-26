@@ -1,0 +1,76 @@
+defaults:
+    - env: vmas_football_full
+    - agents: mappo
+    - run: train_100m
+    - logger: default_logger
+    - env@eval.env: ${env}
+    - hydra: slurm_sweep
+    - _self_
+
+hydra:
+  launcher:
+    timeout_min: 10080
+    cpus_per_task: 8
+    array_parallelism: 32
+    mem_per_cpu: 2G
+  sweeper:
+    optim:
+      optimizer: RandomSearch
+      budget: 32
+      num_workers: 16
+      noisy: true
+      maximize: true
+      seed: null
+      max_failure_rate: 0.1
+    parametrization:
+      agents.lr.actor:
+        lower: 3e-5
+        upper: 1e-2
+        log: true
+      agents.ent_coef:
+        lower: 1e-5
+        upper: 1e-3
+        log: true
+
+name: vmas
+seed: 1
+zoo_path: vmas_zoo/zoo
+
+agents:
+  model:
+    actor:
+      - 256
+      - 256
+      - 128
+    critic:
+      - 256
+      - 256
+      - 128
+  gamma: 0.999
+  ent_coef: 4e-3
+  lr:
+    actor: 4e-3
+    critic: 8e-3
+  n_steps: 64
+  n_agents: 4
+  save_to_zoo: false
+  agents:
+      - agent_id: LB
+        save_to_zoo: false
+      - agent_id: RB
+        save_to_zoo: false
+      - agent_id: LF
+        save_to_zoo: false
+      - agent_id: RF
+        save_to_zoo: false
+
+logger:
+  mode: online
+  enable_render: false
+  model_save_period:
+    val: 0.05
+  eval_period:
+    val: 0.02
+  train_metric_period:
+    val: 0.05
+  log_vmas_auc: true

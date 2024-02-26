@@ -1,0 +1,34 @@
+defaults:
+  - ippo_medoe
+  - _self_
+
+type: DoEBPIPPO
+kl_coef: 5e-3
+medoe:
+  base_vals:
+    kl: ${agents.kl_coef}
+  boost_vals:
+    kl: 1.0
+
+      # # override in main config:
+      # agents:
+      #   n_agents: 4
+      #   save_to_zoo: false
+      #   medoe:
+      #     zoo_alice: herman-goulding
+      #     zoo_bob: teofila-warwick
+      #     zoo_carol: john-smith
+      #     zoo_dave: dave-smith
+      #   agents:
+      #       - agent_id: alice
+      #         save_to_zoo: true
+      #         zoo_name: ${agents.medoe.zoo_alice}
+      #       - agent_id: bob
+      #         save_to_zoo: true
+      #         zoo_name: ${agents.medoe.zoo_bob}
+      #       - agent_id: carol
+      #         save_to_zoo: true
+      #         zoo_name: ${agents.medoe.zoo_carol}
+      #       - agent_id: dave
+      #         save_to_zoo: true
+      #         zoo_name: ${agents.medoe.zoo_dave}
