@@ -13,7 +13,7 @@ QMIX experiments were performed using [EPyMARL](https://github.com/uoe-agents/ep
 ## Instructions
 To run code, try
 ```bash
-python scripts/simple_env_runner.py -cn ENV_NAME
+python scripts/simple_env_runner.py -cn CONFIG_NAME
 ```
 The codebase uses [hydra](https://hydra.cc) for config management. Config files can be found in the `configs` directory.
 
