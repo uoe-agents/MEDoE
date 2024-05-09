@@ -17,10 +17,10 @@ python scripts/simple_env_runner.py -cn CONFIG_NAME
 ```
 The codebase uses [hydra](https://hydra.cc) for config management. Config files can be found in the `configs` directory.
 
-Loading pre-trained agents from source tasks is done via an 'agent zoo' interface. An 'agent zoo' is a directory containing config files of agents, as well as saved models and experience buffers. Each agent in the zoo has a name, by which it can be referred. See [`configs/cooking_medoe.yaml`](https://github.com/uoe-agents/MEDoE/blob/main/fst/configs/cooking_medoe.yaml) for an example of a config file which loads zoo agents.  We provide the agent zoos used in this paper in our data upload (link TBA). 
+Loading pre-trained agents from source tasks is done via an 'agent zoo' interface. An 'agent zoo' is a directory containing config files of agents, as well as saved models and experience buffers. Each agent in the zoo has a name, by which it can be referred. See [`configs/cooking_medoe.yaml`](https://github.com/uoe-agents/MEDoE/blob/main/fst/configs/cooking_medoe.yaml) for an example of a config file which loads zoo agents.  We provide the agent zoos used in this paper in our [data upload](https://doi.org/10.7488/ds/7731). 
 
 ## Results and Data Sharing
-Experimental data, agent zoo directories, and plotting scripts can be found via the University of Edinburgh's DataShare service (Link TBA).
+Experimental data, agent zoo directories, and plotting scripts can be found [via the University of Edinburgh's DataShare service](https://doi.org/10.7488/ds/7731).
 
 ## Citation
 ```
